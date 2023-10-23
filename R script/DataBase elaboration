@@ -1,0 +1,124 @@
+library(dplyr)
+library(readxl)
+library(openxlsx)
+library(lubridate)
+library(stringi)
+library(stringr)
+
+setwd("C:/Users/User/OneDrive - Universitat Jaume I/Economía/ECONOMETRÍA/Trabajo econometría")
+
+load("G:/Mi unidad/BECA TALENT/data_transferencias.Rda")
+
+percentil_90 <- quantile(data.transferencias$CO2[data.transferencias$COD_TIPO == 40], 0.9, na.rm = TRUE)
+
+
+data <- data.transferencias %>% mutate(YEAR = year(dmy(FEC_TRAMITACION)))
+#saveRDS(data, "data_transferencias_años.rds")
+
+#2015
+ventas_2015 <- data %>%
+  filter(YEAR == 2015)
+
+data_15 <- ventas_2015 %>%
+  filter(trimws(COD_PROVINCIA_VEH) == "M")
+
+data_15 <- data_15 %>% filter(!is.na(CO2))
+
+data_t_15 <- data_15 %>% filter(COD_TIPO == 40)
+
+data_t_15$MUNICIPIO <- tolower(data_t_15$MUNICIPIO)
+data_t_15$MUNICIPIO <- toupper(data_t_15$MUNICIPIO)
+
+data_t_15$MUNICIPIO <- gsub("EL MOLAR", "MOLAR (EL)", data_t_15$MUNICIPIO)
+data_t_15$MUNICIPIO <- gsub("EL VELLON", "VELLON (EL)", data_t_15$MUNICIPIO)
+data_t_15$MUNICIPIO <- gsub("EL ALAMO", "ALAMO (EL)", data_t_15$MUNICIPIO)
+data_t_15$MUNICIPIO <- gsub("EL ALAMO", "ALAMO (EL)", data_t_15$MUNICIPIO)
+data_t_15$MUNICIPIO <- gsub("EL BERRUECO", "BERRUECO (EL)", data_t_15$MUNICIPIO)
+data_t_15$MUNICIPIO <- gsub("BOALO", "BOALO (EL)", data_t_15$MUNICIPIO)
+data_t_15$MUNICIPIO <- gsub("CUBAS", "CUBAS DE LA SAGRA", data_t_15$MUNICIPIO)
+data_t_15$MUNICIPIO <- gsub("ESCORIAL (EL)", "EL ESCORIAL", data_t_15$MUNICIPIO)
+data_t_15$MUNICIPIO <- gsub("LA CABRERA", "CABRERA (LA)", data_t_15$MUNICIPIO)
+data_t_15$MUNICIPIO <- gsub("LOS MOLINOS", "MOLINOS (LOS)", data_t_15$MUNICIPIO)
+data_t_15$MUNICIPIO <- gsub("MIRAFLORES DE SIERRA", "MIRAFLORES DE LA SIERRA", data_t_15$MUNICIPIO)
+data_t_15$MUNICIPIO <- gsub("ORUSCO", "ORUSCO DE TAJUÑA", data_t_15$MUNICIPIO)
+data_t_15$MUNICIPIO <- gsub("PARACUELLOS JARAMA", "PARACUELLOS DE JARAMA", data_t_15$MUNICIPIO)
+data_t_15$MUNICIPIO <- gsub("PEZUELA DE LAS TORRES", "PEZUELA DE TORRES", data_t_15$MUNICIPIO)
+data_t_15$MUNICIPIO <- gsub("RIVAS-VACIAMADRID", "RIVAS VACIAMADRID", data_t_15$MUNICIPIO)
+data_t_15$MUNICIPIO <- gsub("ROZAS DE MADRID (LAS)", "LAS ROZAS DE MADRID", data_t_15$MUNICIPIO)
+data_t_15$MUNICIPIO <- gsub("SAN FERNANDO HENARES", "SAN FERNANDO DE HENARES", data_t_15$MUNICIPIO)
+data_t_15$MUNICIPIO <- gsub("SAN SEBASTIÁN REYES", "SAN SEBASTIÁN DE LOS REY", data_t_15$MUNICIPIO)
+data_t_15$MUNICIPIO <- gsub("TALAMANCA DE JARAMA", "TALAMANCA DEL JARAMA", data_t_15$MUNICIPIO)
+data_t_15$MUNICIPIO <- gsub("TORREMOCHA DE JARAMA", "TORREMOCHA DEL JARAMA", data_t_15$MUNICIPIO)
+data_t_15$MUNICIPIO <- gsub("VALDETORRES JARAMA", "VALDETORRES DE JARAMA", data_t_15$MUNICIPIO)
+data_t_15$MUNICIPIO <- gsub("VILLANUEVA PARDILLO", "VILLANUEVA DEL PARDILLO", data_t_15$MUNICIPIO)
+
+subset_data_2015 <- data_t_15[data_t_15$CO2 > percentil_90, ]
+
+resultados_2015 <- subset_data_2015 %>%
+  group_by(MUNICIPIO) %>%
+  summarise(Total_Ventas = n())
+
+resultados_2015_2 <- data_t_15 %>%
+  group_by(MUNICIPIO) %>%
+  summarise(Total_Ventas = n())
+
+db_2015 <- left_join(resultados_2015, resultados_2015_2, by = "MUNICIPIO")
+
+db_2015 <- db_2015 %>%
+  mutate(Porcentaje = (Total_Ventas.x / Total_Ventas.y) * 100)
+
+write.xlsx(db_2015, "db_2015_final.xlsx")
+
+#2020
+ventas_2020 <- data %>%
+  filter(YEAR == 2020)
+
+data_20 <- ventas_2020 %>%
+  filter(trimws(COD_PROVINCIA_VEH) == "M")
+
+data_20 <- data_20 %>% filter(!is.na(CO2))
+
+data_t_20 <- data_20 %>% filter(COD_TIPO == 40)
+
+data_t_20$MUNICIPIO <- tolower(data_t_20$MUNICIPIO)
+data_t_20$MUNICIPIO <- toupper(data_t_20$MUNICIPIO)
+
+data_t_20$MUNICIPIO <- gsub("EL MOLAR", "MOLAR (EL)", data_t_20$MUNICIPIO)
+data_t_20$MUNICIPIO <- gsub("EL VELLON", "VELLON (EL)", data_t_20$MUNICIPIO)
+data_t_20$MUNICIPIO <- gsub("EL ALAMO", "ALAMO (EL)", data_t_20$MUNICIPIO)
+data_t_20$MUNICIPIO <- gsub("EL BERRUECO", "BERRUECO (EL)", data_t_20$MUNICIPIO)
+data_t_20$MUNICIPIO <- gsub("BOALO", "BOALO (EL)", data_t_20$MUNICIPIO)
+data_t_20$MUNICIPIO <- gsub("CUBAS", "CUBAS DE LA SAGRA", data_t_20$MUNICIPIO)
+data_t_20$MUNICIPIO <- gsub("ESCORIAL (EL)", "EL ESCORIAL", data_t_20$MUNICIPIO)
+data_t_20$MUNICIPIO <- gsub("LA CABRERA", "CABRERA (LA)", data_t_20$MUNICIPIO)
+data_t_20$MUNICIPIO <- gsub("LOS MOLINOS", "MOLINOS (LOS)", data_t_20$MUNICIPIO)
+data_t_20$MUNICIPIO <- gsub("MIRAFLORES DE SIERRA", "MIRAFLORES DE LA SIERRA", data_t_20$MUNICIPIO)
+data_t_20$MUNICIPIO <- gsub("ORUSCO", "ORUSCO DE TAJUÑA", data_t_20$MUNICIPIO)
+data_t_20$MUNICIPIO <- gsub("PARACUELLOS JARAMA", "PARACUELLOS DE JARAMA", data_t_20$MUNICIPIO)
+data_t_20$MUNICIPIO <- gsub("PEZUELA DE LAS TORRES", "PEZUELA DE TORRES", data_t_20$MUNICIPIO)
+data_t_20$MUNICIPIO <- gsub("RIVAS-VACIAMADRID", "RIVAS VACIAMADRID", data_t_20$MUNICIPIO)
+data_t_20$MUNICIPIO <- gsub("ROZAS DE MADRID (LAS)", "LAS ROZAS DE MADRID", data_t_20$MUNICIPIO)
+data_t_20$MUNICIPIO <- gsub("SAN FERNANDO HENARES", "SAN FERNANDO DE HENARES", data_t_20$MUNICIPIO)
+data_t_20$MUNICIPIO <- gsub("SAN SEBASTIÁN REYES", "SAN SEBASTIÁN DE LOS REY", data_t_20$MUNICIPIO)
+data_t_20$MUNICIPIO <- gsub("TALAMANCA DE JARAMA", "TALAMANCA DEL JARAMA", data_t_20$MUNICIPIO)
+data_t_20$MUNICIPIO <- gsub("TORREMOCHA DE JARAMA", "TORREMOCHA DEL JARAMA", data_t_20$MUNICIPIO)
+data_t_20$MUNICIPIO <- gsub("VALDETORRES JARAMA", "VALDETORRES DE JARAMA", data_t_20$MUNICIPIO)
+data_t_20$MUNICIPIO <- gsub("VILLANUEVA PARDILLO", "VILLANueva DEL PARDILLO", data_t_20$MUNICIPIO)
+
+subset_data_2020 <- data_t_20[data_t_20$CO2 > percentil_90, ]
+
+resultados_2020 <- subset_data_2020 %>%
+  group_by(MUNICIPIO) %>%
+  summarise(Total_Ventas = n())
+
+resultados_2020_2 <- data_t_20 %>%
+  group_by(MUNICIPIO) %>%
+  summarise(Total_Ventas = n())
+
+db_2020 <- left_join(resultados_2020, resultados_2020_2, by = "MUNICIPIO")
+
+db_2020 <- db_2020 %>%
+  mutate(Porcentaje = (Total_Ventas.x / Total_Ventas.y) * 100)
+
+write_xlsx(db_2020, "db_2020_final.xlsx")
+
