@@ -122,3 +122,14 @@ db_2020 <- db_2020 %>%
 
 write_xlsx(db_2020, "db_2020_final.xlsx")
 
+#After adding Rentapc from INE, in order to change the db to longer format:
+
+data_2015 <- db_2015[, c("MUNICIPIO", "Porcentaje", "Rentapc2015")]
+colnames(data_2015) <- c("MUNICIPIO", "Porcentaje", "Rentapc")
+data_2015$year <- "2015"
+
+data_2020 <- db_2015[, c("MUNICIPIO", "Porcentaje", "Rentapc2020")]
+colnames(data_2020) <- c("MUNICIPIO", "Porcentaje", "Rentapc")
+data_2020$year <- "2020"
+
+data_combined <- rbind(data_2015, data_2020)
